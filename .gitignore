@@ -1,0 +1,7 @@
+.venv/
+dataset/
+runs/
+out/
+preview/
+__pycache__/
+*.log
