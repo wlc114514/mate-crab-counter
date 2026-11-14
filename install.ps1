@@ -104,5 +104,12 @@ if (-not $NoShortcut) {
     if ($qgc) { Write-Host "找到 QGC：$qgc" } else { Write-Host "没找到 QGC：第一次双击快捷方式时会让你选 QGroundControl.exe 的位置" -ForegroundColor Yellow }
 }
 
+# ---- 6. 登记识别服务，给「QGroundControl Vision」（魔改版 QGC）自动拉起用
+Step "登记识别服务（QGroundControl Vision 会自动启动它）"
+$cmd = "`"$Root\.venv\Scripts\pythonw.exe`" `"$Root\scripts\vision_server.py`" --exit-with-parent"
+New-Item -Path "HKCU:\Software\QGC-Vision" -Force | Out-Null
+Set-ItemProperty -Path "HKCU:\Software\QGC-Vision" -Name "ServerCommand" -Value $cmd
+Write-Host $cmd
+
 Write-Host ""
 Write-Host "安装完成。双击桌面的「QGC + 数螃蟹」使用；只开按钮可以双击 start_crab_button.bat。" -ForegroundColor Green
