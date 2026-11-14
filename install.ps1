@@ -1,7 +1,8 @@
 ﻿# 数螃蟹 安装脚本：找/装 Python -> 建 .venv -> 装 torch（有 N 卡装 CUDA 版，否则 CPU 版）和 rfdetr
-# -> 用示例图自检 -> 桌面建「QGC + 数螃蟹」快捷方式。
-# 用法：双击 install.bat；强制装 CPU 版：install.bat -Cpu；不建快捷方式：install.bat -NoShortcut
-param([switch]$Cpu, [switch]$NoShortcut)
+# -> 用示例图自检 -> 登记识别服务（给 QGroundControl Vision 自动启动用）。
+# 用法：双击 install.bat；强制装 CPU 版：install.bat -Cpu；
+# 另外建旧的「QGC + 数螃蟹」悬浮按钮快捷方式（不用 QGroundControl Vision 时）：install.bat -Shortcut
+param([switch]$Cpu, [switch]$Shortcut)
 
 $ErrorActionPreference = "Continue"  # 原生命令写 stderr 不算失败，靠 $LASTEXITCODE 判断
 $Root = $PSScriptRoot
@@ -89,8 +90,8 @@ if ($line) { Write-Host $line } else { $out | Select-Object -Last 15 | Write-Hos
 if ($line -notmatch "青蟹 4 只") { Write-Host "注意：示例图应该是 4 只青蟹，结果不一致" -ForegroundColor Yellow }
 & $VPy -c "import torch; print('计算设备：' + ('显卡 ' + torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU'))"
 
-# ---- 5. 桌面快捷方式
-if (-not $NoShortcut) {
+# ---- 5. 桌面快捷方式（可选，旧的悬浮按钮方式）
+if ($Shortcut) {
     Step "创建桌面快捷方式「QGC + 数螃蟹」"
     $qgc = & $VPy -c "import sys; sys.path.insert(0, r'$Root\scripts'); import overlay; print(overlay.find_qgc() or '')"
     $desk = [Environment]::GetFolderPath("Desktop")
@@ -111,5 +112,12 @@ New-Item -Path "HKCU:\Software\QGC-Vision" -Force | Out-Null
 Set-ItemProperty -Path "HKCU:\Software\QGC-Vision" -Name "ServerCommand" -Value $cmd
 Write-Host $cmd
 
+$qv = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\QGroundControl Vision" -ErrorAction SilentlyContinue
 Write-Host ""
-Write-Host "安装完成。双击桌面的「QGC + 数螃蟹」使用；只开按钮可以双击 start_crab_button.bat。" -ForegroundColor Green
+Write-Host "安装完成。" -ForegroundColor Green
+if ($qv) {
+    Write-Host "打开 QGroundControl Vision（已经开着的话先关掉重开），飞行界面左侧工具栏点「识别」。" -ForegroundColor Green
+} else {
+    Write-Host "还没装 QGroundControl Vision：到 https://github.com/wlc114514/qgc-vision/releases 下载安装包，装好后打开，飞行界面左侧工具栏点「识别」。" -ForegroundColor Yellow
+}
+if ($Shortcut) { Write-Host "悬浮按钮方式：双击桌面的「QGC + 数螃蟹」。" }
