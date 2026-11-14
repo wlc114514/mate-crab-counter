@@ -5,3 +5,8 @@ out/
 preview/
 __pycache__/
 *.log
+videos/
+frames/
+real/
+dataset_ft/
+dataset_ft2/
