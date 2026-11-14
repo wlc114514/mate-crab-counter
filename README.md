@@ -30,7 +30,12 @@ MATE ROV 2026 NAVIGATOR Task 2.1：数样本板上的欧洲青蟹（European Gre
 
 ### 3. 确认视频
 
-打开 QGroundControl Vision，飞行界面能看到 ROV 的画面就行。没有画面的话：Q 图标 → Application Settings → 常规 → 视频，源选 RTSP 视频流，填摄像头的 RTSP 地址（比如 `rtsp://192.168.1.10:554/stream1`）；用 UDP 推流的选对应的 UDP 选项。
+打开 QGroundControl Vision，飞行界面能看到 ROV 的画面就行。设置和官方 QGC 共用，官方 QGC 里有画面，这里就有。
+
+注意 **ROV 连接和视频是分开设置的**：Application Settings → Comm Links 里的「ROV」（TCP `192.168.1.200:4019`）只传飞控数据，ROV 不会把视频地址告诉 QGC。视频要在 Application Settings → 常规 → 视频 里单独设：源选「RTSP Video Stream」，填 ROV 摄像头的 RTSP 地址（比如 `rtsp://192.168.1.10:554/stream1`）。
+
+- 摄像头是 H.265 1080p 也没问题；RTSP 不通 UDP 时 QGC 会在几秒后自动改走 TCP，不用额外设置。
+- 「识别」取的是 QGC 解码后的画面，所以只要 QGC 能播出来，不管视频走 TCP 还是 UDP、H.264 还是 H.265 都能识别。
 
 ### 4. 识别
 
