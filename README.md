@@ -3,7 +3,7 @@
 MATE ROV 2026 NAVIGATOR Task 2.1：数样本板上的欧洲青蟹（European Green crab）。
 
 模型是 RF-DETR Small，识别 `green` / `rock` / `jonah` 三类，只报 `green` 的数量。
-先用手册里三张官方螃蟹图合成数据训练（`runs/small`），再用真实水池录像微调（`runs/ft2`，当前默认）。
+先用手册里三张官方螃蟹图合成数据训练（`runs/small`），再用真实水池录像微调：`runs/ft2`（11-12 旧泳池），`runs/ft3`（加了 11-15 新泳池、新摄像头，当前默认）。
 
 ## 接到 QGroundControl Vision 使用
 
@@ -84,17 +84,19 @@ Application Settings → 常规 → 视觉识别：
   ```
 - **识别服务单独运行**（调试或接别的程序）：`.venv\Scripts\python scripts\vision_server.py`，监听 `http://127.0.0.1:8765`，接口见 [qgc-vision 的 VISION.md](https://github.com/wlc114514/qgc-vision/blob/main/VISION.md)。
 
-## 结果（runs/ft2）
+## 结果
 
-| 测试 | 结果 |
-|---|---|
-| 合成测试集 300 张，青蟹数量完全正确 | 299 / 300 |
-| 真实水池录像，没参与训练的最后 30 秒，单帧 | 95.3% |
-| 同上，3 秒多帧投票 | 27 / 27 |
-| 换摆法（剪贴合成）验证集 | 96.3%（和训练用同一种剪贴方法，偏乐观） |
-| 3 张水下截图 + 道具说明实拍板 | 全对 |
+| 测试 | ft2 | ft3（默认） |
+|---|---|---|
+| 合成测试集 300 张，青蟹数量完全正确 | 299 / 300 | 298 / 300 |
+| 旧泳池（11-12）没参与训练的 30 秒，单帧 | 94.7% | 96.7% |
+| 同上，3 秒多帧投票 | 10 / 10 | 10 / 10 |
+| 新泳池 + 新摄像头（11-15）没参与训练的最后 15 秒，单帧 | 11.5% | 64.1% |
+| 同上，3 秒多帧投票 | 0 / 5 | 5 / 5 |
 
-局限：真实数据只来自一个泳池、一套打印的螃蟹、一种灯光；换场地还没验证。ROV 爪子挡住板子时会少数。
+新泳池的摄像头几乎拍不出红色，ft2 靠颜色分品种，把 rock / jonah 当成青蟹。ft3 在训练里加了新泳池的画面，又把旧数据去红、偏青、降饱和（`scripts/color_aug.py`），逼模型看形状和花纹。
+
+局限：新泳池只有一段 64 秒录像、一种摆法，测试帧和训练帧来自同一段录像，成绩偏乐观；新摄像头下 rock / jonah 仍常互相认错（单帧三类全对 37%），只报青蟹数影响较小。ROV 爪子挡住板子时会少数。
 
 ## 重新训练
 
@@ -104,7 +106,7 @@ Application Settings → 常规 → 视觉识别：
 .venv\Scripts\python scripts\make_dataset.py --workers 4           # 合成数据集
 .venv\Scripts\python scripts\train.py --epochs 30                  # 合成数据训练 -> runs/small
 # 真实录像微调：抽帧 -> label_real.py 自动标注 -> copypaste.py 换摆法增强
-# -> make_ft_dataset.py 合并 -> train.py --weights runs/small/... --lr 5e-5 --out runs/ft2
+# -> color_aug.py 颜色退化 -> make_ft_dataset.py 合并 -> train.py --weights runs/ft2/... --lr 5e-5 --out runs/ft3
 .venv\Scripts\python scripts\count.py --eval                       # 合成测试集计数准确率
 ```
 

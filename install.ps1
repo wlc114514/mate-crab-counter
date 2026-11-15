@@ -82,8 +82,8 @@ if ($LASTEXITCODE -ne 0) { Fail "依赖安装失败（检查网络后重新运�
 
 # ---- 4. 自检
 Step "自检：用示例图数一次（第一次运行要加载模型，稍等）"
-$W = Join-Path $Root "runs\ft2\checkpoint_best_total.pth"
-if (-not (Test-Path $W)) { Fail "缺少权重文件 runs\ft2\checkpoint_best_total.pth，压缩包可能没解压完整" }
+$W = Join-Path $Root "runs\ft3\checkpoint_best_total.pth"
+if (-not (Test-Path $W)) { Fail "缺少权重文件 runs\ft3\checkpoint_best_total.pth，压缩包可能没解压完整" }
 $out = & $VPy (Join-Path $Root "scripts\count.py") (Join-Path $Root "assets\real\pool_01.png") 2>&1 | ForEach-Object { "$_" }
 $line = $out | Where-Object { $_ -like "pool_01*" }
 if ($line) { Write-Host $line } else { $out | Select-Object -Last 15 | Write-Host; Fail "自检没跑通（上面是最后的输出）" }

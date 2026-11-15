@@ -577,7 +577,7 @@ class App:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--weights", default=str(ROOT / "runs/ft2/checkpoint_best_total.pth"))
+    ap.add_argument("--weights", default=str(ROOT / "runs/ft3/checkpoint_best_total.pth"))
     ap.add_argument("--source", default=None, help="视频流地址 / 录像文件 / screen（默认读 QGC 设置里的 RTSP 地址）")
     ap.add_argument("--at", type=float, default=0.0)
     ap.add_argument("--seconds", type=float, default=3.0)

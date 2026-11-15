@@ -143,7 +143,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--host", default="127.0.0.1")
     ap.add_argument("--port", type=int, default=8765)
-    ap.add_argument("--weights", default=str(ROOT / "runs/ft2/checkpoint_best_total.pth"))
+    ap.add_argument("--weights", default=str(ROOT / "runs/ft3/checkpoint_best_total.pth"))
     ap.add_argument("--thr", type=float, default=0.5)
     ap.add_argument("--exit-with-parent", action="store_true")
     a = ap.parse_args()

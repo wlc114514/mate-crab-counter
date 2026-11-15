@@ -153,7 +153,7 @@ def evaluate(model, thr: float, split: Path) -> None:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("images", nargs="*")
-    ap.add_argument("--weights", default=str(ROOT / "runs/ft2/checkpoint_best_total.pth"))
+    ap.add_argument("--weights", default=str(ROOT / "runs/ft3/checkpoint_best_total.pth"))
     ap.add_argument("--thr", type=float, default=0.5)
     ap.add_argument("--eval", nargs="?", const=str(ROOT / "dataset/test"), default=None)
     ap.add_argument("--no-crop", action="store_true")
